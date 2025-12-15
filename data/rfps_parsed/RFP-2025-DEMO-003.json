@@ -1,0 +1,76 @@
+{
+    "rfp_id": "RFP-2025-DEMO-003",
+    "title": "Supply of High Voltage Cables for Transmission Network",
+    "source_url": "https://example.com/rfp/2025-demo-003",
+    "submission_deadline": "2026-02-28T17:00:00",
+    "buyer": "Power Grid Corporation of India Limited (PGCIL)",
+    "summary": "Procurement of XLPE insulated armoured cables for 11 kV transmission network expansion. Total estimated value: INR 25 lakhs.",
+    "scope_of_supply": [
+        {
+            "item_id": "ITEM-001",
+            "description": "3.5 Core 240 sq.mm XLPE Armoured Cable 11 kV",
+            "quantity": 1500.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Aluminium",
+                "conductor_size": "240",
+                "insulation_type": "XLPE",
+                "voltage_grade": "11",
+                "cores": "3.5",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 7098"
+            }
+        },
+        {
+            "item_id": "ITEM-002",
+            "description": "3.5 Core 400 sq.mm XLPE Armoured Cable 11 kV",
+            "quantity": 1000.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Aluminium",
+                "conductor_size": "400",
+                "insulation_type": "XLPE",
+                "voltage_grade": "11",
+                "cores": "3.5",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 7098"
+            }
+        },
+        {
+            "item_id": "ITEM-003",
+            "description": "3.5 Core 500 sq.mm XLPE Armoured Cable 11 kV",
+            "quantity": 800.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Aluminium",
+                "conductor_size": "500",
+                "insulation_type": "XLPE",
+                "voltage_grade": "11",
+                "cores": "3.5",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 7098"
+            }
+        }
+    ],
+    "test_requirements": [
+        {
+            "test_name": "Routine Tests",
+            "description": "High voltage withstand and insulation tests",
+            "required_standard": "IS 7098 Part 1",
+            "frequency": "per lot"
+        },
+        {
+            "test_name": "Type Tests",
+            "description": "Complete type testing including dielectric and mechanical tests",
+            "required_standard": "IS 7098 Part 1",
+            "frequency": "once per order"
+        },
+        {
+            "test_name": "Field Tests",
+            "description": "On-site commissioning tests and acceptance tests",
+            "required_standard": "IS 7098 Part 1",
+            "frequency": "at site"
+        }
+    ],
+    "raw_text": "RFP for supply of high voltage transmission cables..."
+}

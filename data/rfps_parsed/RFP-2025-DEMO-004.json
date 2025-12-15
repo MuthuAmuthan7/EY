@@ -1,0 +1,55 @@
+{
+    "rfp_id": "RFP-2025-DEMO-004",
+    "title": "Supply of Instrumentation Cables for Refinery Automation",
+    "source_url": "https://example.com/rfp/2025-demo-004",
+    "submission_deadline": "2026-03-05T17:00:00",
+    "buyer": "Indian Oil Corporation Limited (IOCL)",
+    "summary": "Procurement of instrumentation and signal cables for refinery process automation. Total estimated value: INR 5 lakhs.",
+    "scope_of_supply": [
+        {
+            "item_id": "ITEM-001",
+            "description": "2 Core Instrumentation Cable 1.5 sq.mm",
+            "quantity": 3000.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Copper",
+                "conductor_size": "1.5",
+                "insulation_type": "PVC",
+                "voltage_grade": "1.1 kV",
+                "cores": "2",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 7098"
+            }
+        },
+        {
+            "item_id": "ITEM-002",
+            "description": "4 Core Instrumentation Cable 2.5 sq.mm",
+            "quantity": 1500.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Copper",
+                "conductor_size": "2.5",
+                "insulation_type": "PVC",
+                "voltage_grade": "1.1 kV",
+                "cores": "4",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 7098"
+            }
+        }
+    ],
+    "test_requirements": [
+        {
+            "test_name": "Routine Tests",
+            "description": "Electrical and mechanical properties verification",
+            "required_standard": "IS 7098 Part 1",
+            "frequency": "per lot"
+        },
+        {
+            "test_name": "Signal Integrity Tests",
+            "description": "Signal transmission and shielding effectiveness tests",
+            "required_standard": "Custom specification",
+            "frequency": "once per order"
+        }
+    ],
+    "raw_text": "RFP for supply of instrumentation cables for refinery..."
+}

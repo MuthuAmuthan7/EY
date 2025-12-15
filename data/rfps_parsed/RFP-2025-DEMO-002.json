@@ -1,0 +1,55 @@
+{
+    "rfp_id": "RFP-2025-DEMO-002",
+    "title": "Supply of Control Cables for Industrial Automation Project",
+    "source_url": "https://example.com/rfp/2025-demo-002",
+    "submission_deadline": "2026-01-20T17:00:00",
+    "buyer": "National Thermal Power Corporation (NTPC)",
+    "summary": "Procurement of multi-core control cables for power plant automation systems. Total estimated value: INR 8 lakhs.",
+    "scope_of_supply": [
+        {
+            "item_id": "ITEM-001",
+            "description": "4 Core Control Cable 240 sq.mm",
+            "quantity": 800.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Copper",
+                "conductor_size": "240",
+                "insulation_type": "PVC",
+                "voltage_grade": "1.1 kV",
+                "cores": "4",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 1554"
+            }
+        },
+        {
+            "item_id": "ITEM-002",
+            "description": "7 Core Control Cable 2.5 sq.mm",
+            "quantity": 2000.0,
+            "unit": "meters",
+            "specs": {
+                "conductor_material": "Copper",
+                "conductor_size": "2.5",
+                "insulation_type": "PVC",
+                "voltage_grade": "1.1 kV",
+                "cores": "7",
+                "armour_type": "Steel Wire Armour",
+                "standard": "IS 1554"
+            }
+        }
+    ],
+    "test_requirements": [
+        {
+            "test_name": "Routine Tests",
+            "description": "Electrical continuity and insulation resistance tests",
+            "required_standard": "IS 1554 Part 1",
+            "frequency": "per lot"
+        },
+        {
+            "test_name": "Type Tests",
+            "description": "Tensile strength and thermal endurance tests",
+            "required_standard": "IS 1554 Part 1",
+            "frequency": "once per order"
+        }
+    ],
+    "raw_text": "RFP for supply of control cables for automation systems..."
+}

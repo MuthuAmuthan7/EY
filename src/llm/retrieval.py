@@ -1,4 +1,4 @@
-"""Retrieval layer using LlamaIndex for vector search with Gemini embeddings."""
+"""Retrieval layer using LlamaIndex for vector search with HuggingFace embeddings."""
 
 import logging
 from pathlib import Path
@@ -9,12 +9,15 @@ from llama_index.core import (
     StorageContext,
     load_index_from_storage,
     Document,
+    Settings
 )
 from llama_index.core.node_parser import SimpleNodeParser
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from ..config import settings
 from ..models.rfp_models import RFPItem
 from ..models.sku_models import SKU
+from ..data_ingestion.sku_loader import load_skus
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +39,11 @@ class SKURetriever:
         """Load existing index from disk."""
         try:
             if self.index_path.exists():
+                # Configure HuggingFace embeddings before loading index
+                Settings.embed_model = HuggingFaceEmbeddings(
+                    model_name="sentence-transformers/all-mpnet-base-v2"
+                )
+                
                 storage_context = StorageContext.from_defaults(
                     persist_dir=str(self.index_path)
                 )
@@ -60,12 +68,14 @@ class SKURetriever:
         Returns:
             List of SKU dictionaries with metadata
         """
+        # If index is not loaded, use fallback immediately
         if not self.index:
-            logger.error("SKU index not loaded")
-            return []
+            logger.warning("SKU index not loaded. Using fallback: returning all SKUs from CSV")
+            return self._fallback_get_all_skus()
         
         # Build query from RFP item
         query = self._build_query(rfp_item)
+        logger.info(f"Searching for SKUs with query: {query}")
         
         try:
             # Query the index
@@ -76,20 +86,58 @@ class SKURetriever:
             
             # Extract SKU data from response
             candidates = []
-            for node in response.source_nodes:
-                candidates.append({
-                    "sku_id": node.metadata.get("sku_id", ""),
-                    "product_name": node.metadata.get("product_name", ""),
-                    "category": node.metadata.get("category", ""),
-                    "features": node.metadata.get("features", {}),
-                    "score": node.score,
-                    "text": node.text
-                })
+            
+            # Check if we have source nodes
+            if hasattr(response, 'source_nodes') and response.source_nodes:
+                logger.info(f"Found {len(response.source_nodes)} candidate nodes")
+                for node in response.source_nodes:
+                    candidates.append({
+                        "sku_id": node.metadata.get("sku_id", ""),
+                        "product_name": node.metadata.get("product_name", ""),
+                        "category": node.metadata.get("category", ""),
+                        "features": node.metadata.get("features", {}),
+                        "score": node.score if hasattr(node, 'score') else 0,
+                        "text": node.text if hasattr(node, 'text') else ""
+                    })
+            else:
+                logger.warning(f"No source nodes found in response. Response type: {type(response)}")
+                logger.warning(f"Response: {response}")
+            
+            if not candidates:
+                logger.warning(f"No SKU candidates found for: {query}")
+                logger.info("Falling back to all SKUs in repository...")
+                # Fallback: return all SKUs from the repository
+                candidates = self._fallback_get_all_skus()
             
             return candidates
             
         except Exception as e:
-            logger.error(f"Error querying SKU index: {e}")
+            logger.error(f"Error querying SKU index: {e}", exc_info=True)
+            logger.info("Falling back to all SKUs in repository due to error...")
+            return self._fallback_get_all_skus()
+    
+    def _fallback_get_all_skus(self) -> List[dict]:
+        """Fallback method to load all SKUs from CSV when index fails.
+        
+        Returns:
+            List of all SKUs as dictionaries
+        """
+        try:
+            repository = load_skus()
+            candidates = []
+            for sku in repository.skus:
+                candidates.append({
+                    "sku_id": sku.sku_id,
+                    "product_name": sku.product_name,
+                    "category": sku.category,
+                    "features": {f.name: f.value for f in sku.features},
+                    "score": 0.5,  # Neutral score for fallback
+                    "text": f"{sku.product_name} {sku.category}"
+                })
+            logger.info(f"Fallback: Loaded {len(candidates)} SKUs from CSV")
+            return candidates
+        except Exception as e:
+            logger.error(f"Error in fallback SKU loading: {e}")
             return []
     
     def _build_query(self, rfp_item: RFPItem) -> str:
