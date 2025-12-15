@@ -1,0 +1,16 @@
+sku_id,product_name,category,conductor_material,conductor_size,conductor_size_unit,insulation_type,voltage_grade,voltage_unit,cores,armour_type,standard
+SKU-CABLE-001,XLPE Insulated Armoured Cable 3.5C x 240 sq.mm,Power Cable,Aluminium,240,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-002,XLPE Insulated Armoured Cable 3.5C x 185 sq.mm,Power Cable,Aluminium,185,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-003,XLPE Insulated Armoured Cable 3.5C x 300 sq.mm,Power Cable,Aluminium,300,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-004,PVC Insulated Armoured Cable 4C x 240 sq.mm,Power Cable,Copper,240,sq.mm,PVC,1.1,kV,4,Steel Wire Armour,IS 1554
+SKU-CABLE-005,XLPE Insulated Armoured Cable 3.5C x 240 sq.mm,Power Cable,Copper,240,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-006,XLPE Insulated Armoured Cable 3.5C x 150 sq.mm,Power Cable,Aluminium,150,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-007,XLPE Insulated Cable 3C x 240 sq.mm,Power Cable,Aluminium,240,sq.mm,XLPE,1.1,kV,3,None,IS 7098
+SKU-CABLE-008,Control Cable 4C x 2.5 sq.mm,Control Cable,Copper,2.5,sq.mm,PVC,1.1,kV,4,Steel Wire Armour,IS 1554
+SKU-CABLE-009,Control Cable 7C x 2.5 sq.mm,Control Cable,Copper,2.5,sq.mm,PVC,1.1,kV,7,Steel Wire Armour,IS 1554
+SKU-CABLE-010,Instrumentation Cable 2C x 1.5 sq.mm,Instrumentation Cable,Copper,1.5,sq.mm,PVC,1.1,kV,2,Steel Wire Armour,IS 7098
+SKU-CABLE-011,XLPE Insulated Armoured Cable 3.5C x 400 sq.mm,Power Cable,Aluminium,400,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-012,XLPE Insulated Armoured Cable 3.5C x 500 sq.mm,Power Cable,Aluminium,500,sq.mm,XLPE,1.1,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-013,XLPE Insulated Armoured Cable 3.5C x 240 sq.mm,Power Cable,Aluminium,240,sq.mm,XLPE,3.3,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-014,XLPE Insulated Armoured Cable 3.5C x 240 sq.mm,Power Cable,Aluminium,240,sq.mm,XLPE,6.6,kV,3.5,Steel Wire Armour,IS 7098
+SKU-CABLE-015,XLPE Insulated Armoured Cable 3.5C x 240 sq.mm,Power Cable,Aluminium,240,sq.mm,XLPE,11,kV,3.5,Steel Wire Armour,IS 7098

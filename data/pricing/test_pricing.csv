@@ -1,0 +1,9 @@
+test_name,price,currency
+Routine Tests,5000.00,INR
+Type Tests,25000.00,INR
+Sample Tests,3500.00,INR
+Acceptance Tests,4500.00,INR
+Prequalification Tests,35000.00,INR
+Electrical Tests,6000.00,INR
+Mechanical Tests,4000.00,INR
+Environmental Tests,8000.00,INR

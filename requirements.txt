@@ -1,0 +1,31 @@
+# Core AI & LLM Libraries
+langgraph>=0.0.40
+llama-index>=0.9.0
+llama-index-vector-stores-chroma>=0.1.0
+google-generativeai>=0.3.0
+llama-index-llms-gemini>=0.1.0
+llama-index-embeddings-gemini>=0.1.0
+
+# Vector Database
+chromadb>=0.4.18
+
+# Web Framework
+streamlit>=1.28.0
+
+# Data Processing
+pandas>=2.1.0
+pydantic>=2.4.0
+pydantic-settings>=2.0.3
+
+# Web Scraping
+requests>=2.31.0
+httpx>=0.25.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.3
+
+# Utilities
+python-dotenv>=1.0.0
+python-dateutil>=2.8.2
+
+# Optional: PDF Processing
+pypdf>=3.17.0
