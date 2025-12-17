@@ -71,15 +71,16 @@ def sidebar():
         
         st.markdown("---")
         
-        st.subheader("About")
-        st.info("""
-        **Agentic AI RFP Automation**
+        st.header("Created By ")
+        st.subheader("Team Soul To Syntax")
+        # st.info("""
+        # **Agentic AI RFP Automation**
         
-        Powered by:
-        - LangGraph for orchestration
-        - LlamaIndex for retrieval
-        - Google Gemini for intelligence
-        """)
+        # Powered by:
+        # - LangGraph for orchestration
+        # - LlamaIndex for retrieval
+        # - Google Gemini for intelligence
+        # """)
 
 
 def rfp_discovery_section():
