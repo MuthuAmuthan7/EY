@@ -47,7 +47,7 @@ This platform automates the entire RFP response workflow for a cable manufacturi
     └──────────┬─────────────────┘
                │
         ┌──────▼──────┐
-        │   OpenAI    │
+        │   Gemini    │
         │     LLM     │
         └─────────────┘
 ```
