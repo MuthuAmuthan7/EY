@@ -10,8 +10,8 @@ import streamlit as st
 import logging
 from datetime import datetime
 import pandas as pd
+import requests
 
-from src.agents.graph import run_sales_scan, run_full_workflow_for_rfp
 from src.data_ingestion.build_indexes import build_all_indexes
 from src.config import settings
 
@@ -22,6 +22,13 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+# API Configuration
+# Use 'api' service name when running in Docker, 'localhost' for local development
+import os
+API_HOST = os.getenv("API_HOST", "localhost")
+API_BASE_URL = f"http://{API_HOST}:8000/api/v1"
+WORKFLOW_API = f"{API_BASE_URL}/workflow"
 
 
 # Page configuration
@@ -52,7 +59,27 @@ def sidebar():
         st.markdown("---")
         
         st.subheader("System Status")
-        st.success("✅ All agents ready")
+        
+        # Check Qdrant connection
+        try:
+            from qdrant_client import QdrantClient
+            qdrant_client = QdrantClient(
+                url=settings.qdrant_url,
+                api_key=settings.qdrant_api_key,
+                prefer_grpc=False
+            )
+            collections = qdrant_client.get_collections()
+            st.success(f"✅ Qdrant connected ({len(collections.collections)} collections)")
+        except Exception as e:
+            st.error(f"❌ Qdrant: {str(e)[:50]}")
+        
+        # Check Cohere API
+        try:
+            import cohere
+            cohere_client = cohere.ClientV2(api_key=settings.cohere_api_key)
+            st.success("✅ Cohere API ready")
+        except Exception as e:
+            st.error(f"❌ Cohere: {str(e)[:50]}")
         
         st.markdown("---")
         
@@ -61,13 +88,23 @@ def sidebar():
         if st.button("🔧 Build Indexes", use_container_width=True):
             with st.spinner("Building vector indexes..."):
                 try:
+                    # Add detailed logging
+                    import logging
+                    logging.basicConfig(level=logging.DEBUG)
+                    
+                    st.write("📝 Starting index build...")
                     success = build_all_indexes(force_rebuild=True)
+                    
                     if success:
-                        st.success("Indexes built successfully!")
+                        st.success("✅ Indexes built successfully!")
                     else:
-                        st.error("Failed to build indexes")
+                        st.error("❌ Failed to build indexes - check logs above")
+                        
                 except Exception as e:
-                    st.error(f"Error: {e}")
+                    st.error(f"❌ Error: {str(e)}")
+                    st.write(f"**Details:** {repr(e)}")
+                    import traceback
+                    st.code(traceback.format_exc())
         
         st.markdown("---")
         
@@ -96,9 +133,14 @@ def rfp_discovery_section():
         if st.button("🔍 Scan RFPs", use_container_width=True, type="primary"):
             with st.spinner("Scanning for RFPs..."):
                 try:
-                    rfps = run_sales_scan()
+                    response = requests.get(f"{WORKFLOW_API}/scan-rfps")
+                    response.raise_for_status()
+                    rfps = response.json()
                     st.session_state.rfps = rfps
                     st.success(f"Found {len(rfps)} relevant RFPs!")
+                except requests.exceptions.ConnectionError:
+                    st.error("❌ Cannot connect to API. Make sure the FastAPI server is running on http://localhost:8000")
+                    logger.error("API connection error")
                 except Exception as e:
                     st.error(f"Error scanning RFPs: {e}")
                     logger.error(f"Scan error: {e}", exc_info=True)
@@ -111,10 +153,10 @@ def rfp_discovery_section():
         rfp_data = []
         for rfp in st.session_state.rfps:
             rfp_data.append({
-                "RFP ID": rfp.rfp_id,
-                "Title": rfp.title,
-                "Deadline": rfp.submission_deadline.strftime("%Y-%m-%d"),
-                "Summary": rfp.brief_summary[:100] + "..." if len(rfp.brief_summary) > 100 else rfp.brief_summary
+                "RFP ID": rfp['rfp_id'],
+                "Title": rfp['title'],
+                "Deadline": datetime.fromisoformat(rfp['submission_deadline']).strftime("%Y-%m-%d"),
+                "Summary": rfp['brief_summary'][:100] + "..." if len(rfp['brief_summary']) > 100 else rfp['brief_summary']
             })
         
         df = pd.DataFrame(rfp_data)
@@ -126,8 +168,8 @@ def rfp_discovery_section():
         st.markdown("---")
         selected_id = st.selectbox(
             "Select RFP to process:",
-            options=[rfp.rfp_id for rfp in st.session_state.rfps],
-            format_func=lambda x: f"{x} - {next(r.title for r in st.session_state.rfps if r.rfp_id == x)}"
+            options=[rfp['rfp_id'] for rfp in st.session_state.rfps],
+            format_func=lambda x: f"{x} - {next(r['title'] for r in st.session_state.rfps if r['rfp_id'] == x)}"
         )
         
         if selected_id:
@@ -143,13 +185,13 @@ def agent_workflow_section():
     st.header("🤖 AI Agent Workflow")
     
     selected_rfp = next(
-        (r for r in st.session_state.rfps if r.rfp_id == st.session_state.selected_rfp_id),
+        (r for r in st.session_state.rfps if r['rfp_id'] == st.session_state.selected_rfp_id),
         None
     )
     
     if selected_rfp:
-        st.markdown(f"**Selected RFP:** {selected_rfp.title}")
-        st.markdown(f"**Deadline:** {selected_rfp.submission_deadline.strftime('%Y-%m-%d %H:%M')}")
+        st.markdown(f"**Selected RFP:** {selected_rfp['title']}")
+        st.markdown(f"**Deadline:** {datetime.fromisoformat(selected_rfp['submission_deadline']).strftime('%Y-%m-%d %H:%M')}")
     
     st.markdown("---")
     
@@ -174,8 +216,11 @@ def agent_workflow_section():
                 status_text.text("📝 Master Agent: Generating final response...")
                 progress_bar.progress(80)
                 
-                # Run workflow
-                final_response = run_full_workflow_for_rfp(st.session_state.selected_rfp_id)
+                # Run workflow via API
+                api_url = f"{WORKFLOW_API}/process-rfp/{st.session_state.selected_rfp_id}"
+                response = requests.post(api_url)
+                response.raise_for_status()
+                final_response = response.json()
                 st.session_state.final_response = final_response
                 
                 progress_bar.progress(100)
@@ -183,6 +228,12 @@ def agent_workflow_section():
                 
                 st.success("AI workflow completed! View results below.")
                 
+            except requests.exceptions.ConnectionError:
+                st.error("❌ Cannot connect to API. Make sure the FastAPI server is running on http://localhost:8000")
+                logger.error("API connection error during workflow")
+            except requests.exceptions.HTTPError as e:
+                st.error(f"Error running workflow: {e.response.json().get('detail', str(e))}")
+                logger.error(f"Workflow HTTP error: {e}", exc_info=True)
             except Exception as e:
                 st.error(f"Error running workflow: {e}")
                 logger.error(f"Workflow error: {e}", exc_info=True)
@@ -204,17 +255,17 @@ def results_section():
     
     with tab1:
         st.subheader("RFP Summary")
-        st.write(response.rfp_summary)
+        st.write(response['rfp_summary'])
         
         st.markdown("---")
         st.subheader("AI-Generated Response")
-        st.write(response.narrative_summary)
+        st.write(response['narrative_summary'])
     
     with tab2:
         st.subheader("Technical Recommendations")
         
         # Product table
-        product_df = pd.DataFrame(response.final_product_table)
+        product_df = pd.DataFrame(response['final_product_table'])
         if not product_df.empty:
             st.dataframe(product_df, use_container_width=True, hide_index=True)
             
@@ -235,7 +286,7 @@ def results_section():
         st.subheader("Pricing Breakdown")
         
         # Pricing table
-        pricing_df = pd.DataFrame(response.pricing_table)
+        pricing_df = pd.DataFrame(response['pricing_table'])
         if not pricing_df.empty:
             # Format currency columns
             currency_cols = ['unit_price', 'material_cost', 'test_cost', 'total_cost']
@@ -250,7 +301,7 @@ def results_section():
             st.subheader("Cost Summary")
             
             # Get totals from last row
-            total_row = response.pricing_table[-1]
+            total_row = response['pricing_table'][-1]
             
             col1, col2, col3 = st.columns(3)
             with col1:
@@ -268,11 +319,11 @@ def results_section():
     with col1:
         if st.button("📥 Download as JSON", use_container_width=True):
             import json
-            json_str = json.dumps(response.model_dump(), indent=2, default=str)
+            json_str = json.dumps(response, indent=2, default=str)
             st.download_button(
                 label="Download JSON",
                 data=json_str,
-                file_name=f"rfp_response_{response.rfp_id}.json",
+                file_name=f"rfp_response_{response['rfp_id']}.json",
                 mime="application/json"
             )
 

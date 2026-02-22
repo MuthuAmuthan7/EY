@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional, Type
 from pydantic import BaseModel
-import google.generativeai as genai
+from google import genai 
 
 from ..config import settings
 
@@ -23,10 +23,9 @@ class LLMClient:
         """
         self.api_key = api_key or settings.google_api_key
         self.model_name = model or settings.llm_model
-        
-        # Configure Gemini
-        genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(self.model_name)
+
+        # Configure Gemini client
+        self.client = genai.Client()
         
         logger.info(f"Initialized LLM client with model: {self.model_name}")
     
@@ -54,16 +53,14 @@ class LLMClient:
             # Combine system and user prompts for Gemini
             full_prompt = f"{system_prompt}\n\n{user_prompt}"
             
-            # Configure generation
-            generation_config = genai.types.GenerationConfig(
-                temperature=temperature,
-                max_output_tokens=max_tokens or 8192,
-            )
-            
-            # Generate response
-            response = self.model.generate_content(
-                full_prompt,
-                generation_config=generation_config
+            # Generate response using new API format
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=full_prompt,
+                config=genai.types.GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=max_tokens or 8192,
+                )
             )
             
             return response.text
