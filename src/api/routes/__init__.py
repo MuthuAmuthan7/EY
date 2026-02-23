@@ -2,6 +2,7 @@
 from . import (
     health_routes,
     rfp_routes,
+    rfp_upload_routes,
     sku_routes,
     recommendation_routes,
     pricing_routes,
@@ -12,6 +13,7 @@ from . import (
 __all__ = [
     'health_routes',
     'rfp_routes',
+    'rfp_upload_routes',
     'sku_routes',
     'recommendation_routes',
     'pricing_routes',

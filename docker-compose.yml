@@ -67,8 +67,33 @@ services:
     depends_on:
       - api
       - qdrant
-    profiles:
-      - web
+
+  # RFP Upload Web App (Optional - runs on 8502)
+  rfp-upload:
+    build: .
+    container_name: rfp-upload-web
+    image: rfp-platform:latest
+    ports:
+      - "8502:8502"
+    env_file:
+      - .env
+    environment:
+      - APP_TYPE=rfp-upload
+      - API_HOST=api
+      - PYTHONUNBUFFERED=1
+      - QDRANT_URL=http://qdrant:6333
+      - COHERE_API_KEY=${COHERE_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./indexes:/app/indexes
+    restart: unless-stopped
+    command: streamlit run web/rfp_upload_app.py --server.port=8502 --server.address=0.0.0.0
+    depends_on:
+      - api
+      - qdrant
+    
 
   # PostgreSQL Database (Optional - for production)
   # Uncomment to use PostgreSQL instead of SQLite

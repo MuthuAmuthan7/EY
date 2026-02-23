@@ -12,6 +12,7 @@ from src.db.database import init_db
 from src.api.routes import (
     health_routes,
     rfp_routes,
+    rfp_upload_routes,
     sku_routes,
     recommendation_routes,
     pricing_routes,
@@ -85,6 +86,7 @@ async def general_exception_handler(request, exc):
 # Include routers
 app.include_router(health_routes.router)
 app.include_router(rfp_routes.router)
+app.include_router(rfp_upload_routes.router)
 app.include_router(sku_routes.router)
 app.include_router(recommendation_routes.router)
 app.include_router(pricing_routes.router)
