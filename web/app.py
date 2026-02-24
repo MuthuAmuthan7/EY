@@ -11,8 +11,6 @@ import logging
 from datetime import datetime
 import pandas as pd
 import requests
-
-from src.data_ingestion.build_indexes import build_all_indexes
 from src.config import settings
 
 # Configure logging
@@ -37,6 +35,109 @@ st.set_page_config(
     page_icon="📋",
     layout="wide",
     initial_sidebar_state="expanded"
+)
+
+# Modern UI styling - Minimal & Clean
+st.markdown(
+    """
+    <style>
+    /* Base styles */
+    .main { padding: 2rem; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    
+    /* Hero section - Clean and minimal */
+    .hero {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        padding: 3rem 2.5rem;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .hero h1 { 
+        margin: 0; 
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    .hero p { 
+        margin: 0.75rem 0 0; 
+        opacity: 0.85;
+        font-size: 1.05rem;
+    }
+    
+    /* Badge/pill styling */
+    .pill {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Feature cards */
+    .card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .card:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .card b {
+        font-size: 1.1rem;
+        color: #1f2937;
+    }
+    
+    /* Tabs styling */
+    [data-baseweb="tab-list"] {
+        border-bottom: 1px solid #e5e7eb;
+    }
+    [data-baseweb="tab-list"] button {
+        font-size: 15px;
+        font-weight: 500;
+        padding: 12px 16px;
+        color: #6b7280;
+    }
+    [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #1f2937;
+        border-bottom: 2px solid #3b82f6;
+    }
+    
+    /* Metric boxes */
+    [data-testid="metric-container"] {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+    
+    /* Dividers */
+    hr {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 2rem 0;
+    }
+    
+    /* Expanders */
+    [data-baseweb="accordion"] {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 
@@ -82,32 +183,7 @@ def sidebar():
             st.error(f"❌ Cohere: {str(e)[:50]}")
         
         st.markdown("---")
-        
-        st.subheader("Developer Tools")
-        
-        if st.button("🔧 Build Indexes", use_container_width=True):
-            with st.spinner("Building vector indexes..."):
-                try:
-                    # Add detailed logging
-                    import logging
-                    logging.basicConfig(level=logging.DEBUG)
-                    
-                    st.write("📝 Starting index build...")
-                    success = build_all_indexes(force_rebuild=True)
-                    
-                    if success:
-                        st.success("✅ Indexes built successfully!")
-                    else:
-                        st.error("❌ Failed to build indexes - check logs above")
-                        
-                except Exception as e:
-                    st.error(f"❌ Error: {str(e)}")
-                    st.write(f"**Details:** {repr(e)}")
-                    import traceback
-                    st.code(traceback.format_exc())
-        
-        st.markdown("---")
-        
+
         st.header("Created By ")
         st.subheader("Team Soul To Syntax")
         # st.info("""
@@ -404,8 +480,27 @@ def main():
     sidebar()
     
     # Main content
-    st.title("🤖 Agentic AI RFP Automation Platform")
-    st.markdown("Automated RFP processing with Sales, Technical, and Pricing AI agents")
+    st.markdown(
+        """
+        <div class="hero">
+            <div class="pill">AI Powered</div>
+            <div class="pill">RFP Automation</div>
+            <h1>🤖 Agentic AI RFP Automation Platform</h1>
+            <p>Modern, interactive workflow for RFP discovery, matching, and pricing.</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("---")
+
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        st.markdown("<div class='card'>📡 <b>Discover</b><br/>Scan RFP sources with deadline filters.</div>", unsafe_allow_html=True)
+    with col_b:
+        st.markdown("<div class='card'>🧠 <b>Analyze</b><br/>Spec match using vector search.</div>", unsafe_allow_html=True)
+    with col_c:
+        st.markdown("<div class='card'>💰 <b>Price</b><br/>Automated cost breakdowns and totals.</div>", unsafe_allow_html=True)
     
     st.markdown("---")
     

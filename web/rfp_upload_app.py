@@ -36,46 +36,135 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom styling
+# Custom styling - Minimal & Modern
 st.markdown("""
     <style>
+    /* Base styles */
     .main {
         padding: 2rem;
     }
-    .stTabs [data-baseweb="tab-list"] button {
-        font-size: 16px;
-        padding: 10px 20px;
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    .upload-section {
-        border: 2px dashed #4CAF50;
-        border-radius: 8px;
-        padding: 2rem;
+    
+    /* Hero section */
+    .hero {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        padding: 3rem 2.5rem;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .hero h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    .hero p {
+        margin: 0.75rem 0 0;
+        opacity: 0.85;
+        font-size: 1.05rem;
+    }
+    
+    /* Feature cards */
+    .card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
         text-align: center;
-        background-color: #f9f9f9;
     }
+    .card:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .card b {
+        font-size: 1.1rem;
+        color: #1f2937;
+    }
+    
+    /* Tabs styling */
+    [data-baseweb="tab-list"] {
+        border-bottom: 1px solid #e5e7eb;
+    }
+    [data-baseweb="tab-list"] button {
+        font-size: 15px;
+        font-weight: 500;
+        padding: 12px 16px;
+        color: #6b7280;
+    }
+    [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #1f2937;
+        border-bottom: 2px solid #3b82f6;
+    }
+    
+    /* Upload section */
+    .upload-section {
+        border: 2px dashed #3b82f6;
+        border-radius: 10px;
+        padding: 2.5rem;
+        text-align: center;
+        background-color: #f0f9ff;
+        transition: all 0.3s ease;
+    }
+    .upload-section:hover {
+        background-color: #e0f2fe;
+        border-color: #0ea5e9;
+    }
+    
+    /* Alert boxes - Modern minimal style */
     .success-box {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
+        background-color: #ecfdf5;
+        border: 1px solid #d1fae5;
+        color: #065f46;
         padding: 1rem;
-        border-radius: 4px;
+        border-radius: 8px;
         margin: 1rem 0;
+        font-weight: 500;
     }
     .error-box {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #7f1d1d;
         padding: 1rem;
-        border-radius: 4px;
+        border-radius: 8px;
         margin: 1rem 0;
+        font-weight: 500;
     }
     .info-box {
-        background-color: #d1ecf1;
-        border: 1px solid #bee5eb;
-        color: #0c5460;
+        background-color: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
         padding: 1rem;
-        border-radius: 4px;
+        border-radius: 8px;
         margin: 1rem 0;
+        font-weight: 500;
+    }
+    
+    /* Dividers */
+    hr {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 2rem 0;
+    }
+    
+    /* Metric boxes */
+    [data-testid="metric-container"] {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+    
+    /* Expanders */
+    [data-baseweb="accordion"] {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -248,11 +337,23 @@ def main():
     init_session_state()
     
     # Header
-    st.title("📄 RFP Upload & SKU Extraction")
-    st.markdown("""
-    Upload RFP (Request for Proposal) PDF documents to automatically extract product information 
-    and create SKU entries in the database using AI-powered parsing.
-    """)
+    st.markdown(
+        """
+        <div class="hero">
+            <h1>📄 RFP Upload & SKU Extraction</h1>
+            <p>Upload RFP PDFs to extract structured data and generate SKUs automatically.</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown("---")
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        st.markdown("<div class='card'>📤 <b>Upload</b><br/>Drop a PDF and start extraction.</div>", unsafe_allow_html=True)
+    with col_b:
+        st.markdown("<div class='card'>🧩 <b>Extract</b><br/>Features, specs, and metadata.</div>", unsafe_allow_html=True)
+    with col_c:
+        st.markdown("<div class='card'>🗂️ <b>Store</b><br/>Save RFP + SKU to SQLite.</div>", unsafe_allow_html=True)
     
     # Tabs
     tab1, tab2, tab3 = st.tabs(["📤 Upload RFP", "📊 View History", "ℹ️ Help"])
