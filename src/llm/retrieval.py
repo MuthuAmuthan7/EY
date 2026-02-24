@@ -49,7 +49,7 @@ class SKURetriever:
             
             # Generate query embedding using Cohere
             query_response = self.cohere_client.embed(
-                model="embed-english-v3-large",
+                model="embed-v4.0",
                 input_type="search_query",
                 texts=[query]
             )

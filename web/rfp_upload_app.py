@@ -91,7 +91,7 @@ def init_session_state():
         st.session_state.preview_data = None
 
 
-def upload_and_extract_rfp(uploaded_file) -> dict:
+def upload_and_extract_rfp(uploaded_file, run_workflow: bool) -> dict:
     """Upload RFP PDF and extract/create SKU.
     
     Args:
@@ -100,7 +100,7 @@ def upload_and_extract_rfp(uploaded_file) -> dict:
     Returns:
         Response from API
     """
-    logger.info(f"Uploading file: {uploaded_file.name}")
+    logger.info(f"Uploading file: {uploaded_file.name}, run_workflow: {run_workflow}")
     
     try:
         # Prepare file for upload
@@ -111,6 +111,7 @@ def upload_and_extract_rfp(uploaded_file) -> dict:
             response = requests.post(
                 f"{RFP_UPLOAD_API}/extract-and-create-sku",
                 files=files,
+                params={"run_workflow": str(run_workflow).lower()},
                 timeout=60
             )
         
@@ -276,6 +277,11 @@ def main():
                 value=False,
                 help="Preview extraction without saving to database"
             )
+            run_workflow = st.checkbox(
+                "Run AI Workflow",
+                value=True,
+                help="Run the full agentic workflow after saving the RFP"
+            )
         
         if uploaded_file:
             st.markdown("---")
@@ -317,7 +323,7 @@ def main():
                                 display_sku_preview(result)
                         else:
                             # Full processing mode
-                            result = upload_and_extract_rfp(uploaded_file)
+                            result = upload_and_extract_rfp(uploaded_file, run_workflow)
                             
                             if result.get('success'):
                                 # Add to history
@@ -356,6 +362,19 @@ def main():
                                     st.markdown("### 📊 Extracted Data")
                                     st.write(f"**Features:** {result['features_count']}")
                                     st.write(f"**Pricing Entries:** {result['pricing_count']}")
+
+                                if result.get("rfp_id"):
+                                    st.markdown("### 🗂️ Stored RFP")
+                                    st.write(f"**RFP ID:** {result['rfp_id']}")
+
+                                if result.get("workflow_error"):
+                                    st.warning(f"Workflow error: {result['workflow_error']}")
+                                elif result.get("workflow_result"):
+                                    wf = result["workflow_result"]
+                                    st.markdown("### 🧠 AI Workflow Output")
+                                    st.markdown(f"**RFP Summary:** {wf.get('rfp_summary', '')}")
+                                    st.markdown("**Narrative Summary:**")
+                                    st.write(wf.get("narrative_summary", ""))
                     
                     except Exception as e:
                         st.markdown(

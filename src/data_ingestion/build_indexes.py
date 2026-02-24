@@ -92,7 +92,7 @@ def build_sku_index(force_rebuild: bool = False) -> bool:
         logger.info(f"✓ Created {len(documents)} documents for indexing")
         
         # Generate embeddings using Cohere
-        logger.info("Generating embeddings using Cohere (embed-english-v3-large)...")
+        logger.info("Generating embeddings using Cohere (embed-v4.0)...")
         
         # Batch embeddings to avoid rate limits
         batch_size = 100
@@ -104,7 +104,7 @@ def build_sku_index(force_rebuild: bool = False) -> bool:
             logger.info(f"  Embedding batch {i // batch_size + 1}/{(len(all_texts) + batch_size - 1) // batch_size}")
             
             response = cohere_client.embed(
-                model="embed-english-v3-large",
+                model="embed-v4.0",
                 input_type="search_document",
                 texts=batch_texts
             )

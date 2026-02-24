@@ -3,6 +3,7 @@
 import logging
 import json
 import uuid
+import re
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
@@ -182,26 +183,27 @@ Return only the JSON object, no additional text."""
                     "feature_id": idx
                 })
         
-        # Create pricing entry
+        # Create pricing entry only if a positive price can be inferred
         pricing = []
-        if rfp_data.get("pricing_info"):
-            # Try to extract price if available
-            pricing.append({
-                "unit_price": 0.0,  # Will be updated if price is extracted
-                "currency": "INR",
-                "pricing_id": 0,
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
-            })
-        else:
-            # Add placeholder pricing
-            pricing.append({
-                "unit_price": 0.0,
-                "currency": "INR",
-                "pricing_id": 0,
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
-            })
+        pricing_info = rfp_data.get("pricing_info")
+        if pricing_info:
+            # Extract first positive number from pricing info, if any
+            price_match = None
+            try:
+                price_match = re.search(r"(\d+(?:\.\d+)?)", str(pricing_info))
+            except Exception:
+                price_match = None
+
+            if price_match:
+                unit_price = float(price_match.group(1))
+                if unit_price > 0:
+                    pricing.append({
+                        "unit_price": unit_price,
+                        "currency": "INR",
+                        "pricing_id": 0,
+                        "created_at": datetime.utcnow().isoformat(),
+                        "updated_at": datetime.utcnow().isoformat()
+                    })
         
         sku_format = {
             "product_name": rfp_data.get("product_name", "Unknown Product"),

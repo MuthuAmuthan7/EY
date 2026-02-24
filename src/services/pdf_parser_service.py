@@ -12,6 +12,13 @@ try:
 except ImportError:
     PyPDF2 = None
 
+# Fallback for environments that install `pypdf` instead of `PyPDF2`
+if PyPDF2 is None:
+    try:
+        import pypdf as PyPDF2
+    except ImportError:
+        PyPDF2 = None
+
 try:
     import pdfplumber
 except ImportError:
@@ -39,8 +46,8 @@ class PDFParserService:
         """Validate that required PDF libraries are available."""
         if not PyPDF2 and not pdfplumber:
             raise ImportError(
-                "At least one of PyPDF2 or pdfplumber is required. "
-                "Install with: pip install PyPDF2 pdfplumber"
+                "At least one of PyPDF2, pypdf, or pdfplumber is required. "
+                "Install with: pip install PyPDF2 pdfplumber pypdf"
             )
         logger.info("PDF parser dependencies validated")
     
