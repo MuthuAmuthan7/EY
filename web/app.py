@@ -328,6 +328,74 @@ def results_section():
             )
 
 
+def sku_database_section():
+    """Render SKU database section showing uploaded SKUs."""
+    st.header("📦 SKU Database")
+    
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        st.markdown("View all SKUs created from uploaded RFP documents")
+    
+    with col2:
+        refresh = st.button("🔄 Refresh SKUs", use_container_width=True, type="primary")
+    
+    # Fetch SKUs from API
+    if refresh or 'skus_loaded' not in st.session_state:
+        try:
+            response = requests.get(f"{API_BASE_URL}/skus?limit=100")
+            response.raise_for_status()
+            data = response.json()
+            st.session_state.sku_list = data.get("items", [])
+            st.session_state.sku_total = data.get("total", 0)
+            st.session_state.skus_loaded = True
+        except requests.exceptions.ConnectionError:
+            st.error("❌ Cannot connect to API. Make sure the FastAPI server is running.")
+            return
+        except Exception as e:
+            st.error(f"Error fetching SKUs: {e}")
+            return
+    
+    sku_list = st.session_state.get("sku_list", [])
+    sku_total = st.session_state.get("sku_total", 0)
+    
+    if not sku_list:
+        st.info("No SKUs found. Upload an RFP document on the Upload page (port 8502) to create SKUs.")
+        return
+    
+    st.success(f"Found **{sku_total}** SKU(s) in the database")
+    
+    for sku in sku_list:
+        with st.expander(f"📦 {sku.get('product_name', 'Unknown')} — `{sku.get('sku_id', '')}`"):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown(f"**Category:** {sku.get('category', 'N/A')}")
+                st.markdown(f"**SKU ID:** `{sku.get('sku_id', 'N/A')}`")
+                if sku.get('description'):
+                    st.markdown(f"**Description:** {sku['description'][:300]}")
+            
+            with col2:
+                features = sku.get('features', [])
+                pricing = sku.get('pricing', [])
+                st.markdown(f"**Features:** {len(features)}")
+                st.markdown(f"**Pricing Entries:** {len(pricing)}")
+                if sku.get('created_at'):
+                    st.markdown(f"**Created:** {sku['created_at'][:19]}")
+            
+            # Show features table
+            if features:
+                st.markdown("**Features:**")
+                feat_data = [{"Name": f.get("name", ""), "Value": f.get("value", ""), "Unit": f.get("unit", "-")} for f in features]
+                st.dataframe(pd.DataFrame(feat_data), use_container_width=True, hide_index=True)
+            
+            # Show pricing table
+            if pricing:
+                st.markdown("**Pricing:**")
+                price_data = [{"Unit Price": f"₹{p.get('unit_price', 0):,.2f}", "Currency": p.get("currency", "INR")} for p in pricing]
+                st.dataframe(pd.DataFrame(price_data), use_container_width=True, hide_index=True)
+
+
 def main():
     """Main application."""
     init_session_state()
@@ -338,6 +406,11 @@ def main():
     # Main content
     st.title("🤖 Agentic AI RFP Automation Platform")
     st.markdown("Automated RFP processing with Sales, Technical, and Pricing AI agents")
+    
+    st.markdown("---")
+    
+    # SKU Database section
+    sku_database_section()
     
     st.markdown("---")
     

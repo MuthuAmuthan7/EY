@@ -132,7 +132,7 @@ class SKUFeatureResponse(SKUFeatureBase):
 class SKUPricingBase(BaseModel):
     """Base SKU pricing schema."""
     
-    unit_price: float = Field(..., description="Price per unit", gt=0)
+    unit_price: float = Field(..., description="Price per unit", ge=0)
     currency: str = Field(default="INR", description="Currency code")
 
 
